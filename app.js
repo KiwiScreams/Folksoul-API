@@ -14,6 +14,7 @@ connectToDb((err) => {
     console.log("App listening on port 3000");
   });
 });
+// SOCIAL MEDIA
 // Get all social media
 app.get("/socialmedia", async (req, res) => {
   try {
