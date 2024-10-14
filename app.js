@@ -68,3 +68,33 @@ app.post("/socialmedia", async (req, res) => {
     res.status(500).json({ error: "Could not create new document" });
   }
 });
+
+// Update a social media link
+app.put("/socialmedia/:id", async (req, res) => {
+  console.log("PUT /socialmedia/:id", req.params.id, req.body);
+
+  if (!ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ error: "Invalid ID format" });
+  }
+
+  const { error } = socialMediaSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  try {
+    const result = await db
+      .collection("socialMedia")
+      .replaceOne({ _id: new ObjectId(req.params.id) }, req.body);
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Social media link not found" });
+    }
+    res
+      .status(200)
+      .json({ message: "Social media link replaced successfully" });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Could not replace document" });
+  }
+});
