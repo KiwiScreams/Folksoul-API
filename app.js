@@ -1,6 +1,13 @@
 const express = require("express");
 const { getDb, connectToDb } = require("./db");
 const { ObjectId } = require("mongodb");
+
+// models
+const SocialMedia = require("./models/socialMediaModel");
+
+// validations
+const socialMediaSchema = require("./validations/socialMediaValidation");
+
 const app = express();
 app.use(express.json());
 let db;
