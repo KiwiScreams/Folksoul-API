@@ -14,3 +14,16 @@ connectToDb((err) => {
     console.log("App listening on port 3000");
   });
 });
+// Get all social media
+app.get("/socialmedia", async (req, res) => {
+  try {
+    const socialLinks = await db
+      .collection("socialMedia")
+      .find()
+      .sort({ mediaName: 1 })
+      .toArray();
+    res.status(200).json(socialLinks);
+  } catch (error) {
+    res.status(500).json({ error: "Could not fetch the social media" });
+  }
+});
