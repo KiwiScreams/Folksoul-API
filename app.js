@@ -22,6 +22,7 @@ connectToDb((err) => {
   });
 });
 // SOCIAL MEDIA
+
 // Get all social media
 app.get("/socialmedia", async (req, res) => {
   try {
@@ -33,5 +34,23 @@ app.get("/socialmedia", async (req, res) => {
     res.status(200).json(socialLinks);
   } catch (error) {
     res.status(500).json({ error: "Could not fetch the social media" });
+  }
+});
+
+// Get a social media link by ID
+app.get("/socialmedia/:id", async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      const doc = await db
+        .collection("socialMedia")
+        .findOne({ _id: new ObjectId(req.params.id) });
+      if (!doc)
+        return res.status(404).json({ error: "Social media link not found" });
+      res.status(200).json(doc);
+    } catch (error) {
+      res.status(500).json({ error: "Could not fetch the social media" });
+    }
+  } else {
+    res.status(400).json({ error: "Invalid ID format" });
   }
 });
