@@ -54,3 +54,17 @@ app.get("/socialmedia/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid ID format" });
   }
 });
+
+// Create a new social media link
+app.post("/socialmedia", async (req, res) => {
+  const { error } = socialMediaSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+
+  try {
+    const newLink = new SocialMedia(req.body);
+    await db.collection("socialMedia").insertOne(newLink);
+    res.status(201).json(newLink);
+  } catch (error) {
+    res.status(500).json({ error: "Could not create new document" });
+  }
+});
