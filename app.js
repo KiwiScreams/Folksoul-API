@@ -185,3 +185,17 @@ app.get("/members/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid ID format" });
   }
 });
+
+// Create a new band member
+app.post("/members", async (req, res) => {
+  const { error } = memberValidationSchema.validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+
+  try {
+    const newMember = new Member(req.body);
+    await db.collection("bandMembers").insertOne(newMember);
+    res.status(201).json(newMember);
+  } catch (error) {
+    res.status(500).json({ error: "Could not create new member" });
+  }
+});
