@@ -12,7 +12,7 @@ const socialMediaSchema = require("./validations/socialMediaValidation");
 const bandValidationSchema = require("./validations/bandValidation");
 const memberValidationSchema = require("./validations/membersValidation");
 
-// 
+//
 const bandMembers = "bandMembers";
 const band = "band";
 const socialMedia = "socialMedia";
@@ -222,6 +222,24 @@ app.put("/members/:id", async (req, res) => {
       res.status(200).json({ message: "Member replaced successfully" });
     } catch (error) {
       res.status(500).json({ error: "Could not replace member" });
+    }
+  } else {
+    res.status(400).json({ error: "Invalid ID format" });
+  }
+});
+
+// Delete a band member by ID
+app.delete("/members/:id", async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      const result = await db
+        .collection(bandMembers)
+        .deleteOne({ _id: new ObjectId(req.params.id) });
+      if (result.deletedCount === 0)
+        return res.status(404).json({ error: "Member not found" });
+      res.status(200).json({ message: "Member deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Could not delete member" });
     }
   } else {
     res.status(400).json({ error: "Invalid ID format" });
