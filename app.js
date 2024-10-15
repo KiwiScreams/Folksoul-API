@@ -123,12 +123,35 @@ app.delete("/socialmedia/:id", async (req, res) => {
 
 // BAND
 
-// Get all band
+// Get band
 app.get("/band", async (req, res) => {
   try {
     const band = await db.collection("band").find().toArray();
     res.status(200).json(band);
   } catch (error) {
     res.status(500).json({ error: "Could not fetch band" });
+  }
+});
+
+// Update a band by ID
+app.put("/band/:id", async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    const { error } = bandValidationSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    try {
+      const result = await db
+        .collection("band")
+        .replaceOne({ _id: new ObjectId(req.params.id) }, req.body);
+
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ error: "Band not found" });
+      }
+      res.status(200).json({ message: "Band replaced successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Could not replace band" });
+    }
+  } else {
+    res.status(400).json({ error: "Invalid ID format" });
   }
 });
