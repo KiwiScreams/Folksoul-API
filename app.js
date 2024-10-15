@@ -12,6 +12,11 @@ const socialMediaSchema = require("./validations/socialMediaValidation");
 const bandValidationSchema = require("./validations/bandValidation");
 const memberValidationSchema = require("./validations/membersValidation");
 
+// 
+const bandMembers = "bandMembers";
+const band = "band";
+const socialMedia = "socialMedia";
+
 const app = express();
 app.use(express.json());
 let db;
@@ -31,7 +36,7 @@ connectToDb((err) => {
 app.get("/socialmedia", async (req, res) => {
   try {
     const socialLinks = await db
-      .collection("socialMedia")
+      .collection(socialMedia)
       .find()
       .sort({ mediaName: 1 })
       .toArray();
@@ -46,7 +51,7 @@ app.get("/socialmedia/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
       const doc = await db
-        .collection("socialMedia")
+        .collection(socialMedia)
         .findOne({ _id: new ObjectId(req.params.id) });
       if (!doc)
         return res.status(404).json({ error: "Social media link not found" });
@@ -66,7 +71,7 @@ app.post("/socialmedia", async (req, res) => {
 
   try {
     const newLink = new SocialMedia(req.body);
-    await db.collection("socialMedia").insertOne(newLink);
+    await db.collection(socialMedia).insertOne(newLink);
     res.status(201).json(newLink);
   } catch (error) {
     res.status(500).json({ error: "Could not create new document" });
@@ -88,7 +93,7 @@ app.put("/socialmedia/:id", async (req, res) => {
 
   try {
     const result = await db
-      .collection("socialMedia")
+      .collection(socialMedia)
       .replaceOne({ _id: new ObjectId(req.params.id) }, req.body);
 
     if (result.matchedCount === 0) {
@@ -108,7 +113,7 @@ app.delete("/socialmedia/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
       const result = await db
-        .collection("socialMedia")
+        .collection(socialMedia)
         .deleteOne({ _id: new ObjectId(req.params.id) });
       if (result.deletedCount === 0)
         return res.status(404).json({ error: "Social media link not found" });
@@ -128,7 +133,7 @@ app.delete("/socialmedia/:id", async (req, res) => {
 // Get the single band
 app.get("/band", async (req, res) => {
   try {
-    const band = await db.collection("band").findOne();
+    const band = await db.collection(band).findOne();
     if (!band) {
       return res.status(404).json({ error: "Band not found" });
     }
@@ -146,7 +151,7 @@ app.put("/band", async (req, res) => {
   }
 
   try {
-    const result = await db.collection("band").replaceOne({}, req.body);
+    const result = await db.collection(band).replaceOne({}, req.body);
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Band not found" });
@@ -162,7 +167,7 @@ app.put("/band", async (req, res) => {
 // Get all band members
 app.get("/members", async (req, res) => {
   try {
-    const members = await db.collection("bandMembers").find().toArray();
+    const members = await db.collection(bandMembers).find().toArray();
     res.status(200).json(members);
   } catch (error) {
     res.status(500).json({ error: "Could not fetch members" });
@@ -174,7 +179,7 @@ app.get("/members/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
       const member = await db
-        .collection("bandMembers")
+        .collection(bandMembers)
         .findOne({ _id: new ObjectId(req.params.id) });
       if (!member) return res.status(404).json({ error: "Member not found" });
       res.status(200).json(member);
@@ -193,7 +198,7 @@ app.post("/members", async (req, res) => {
 
   try {
     const newMember = new Member(req.body);
-    await db.collection("bandMembers").insertOne(newMember);
+    await db.collection(bandMembers).insertOne(newMember);
     res.status(201).json(newMember);
   } catch (error) {
     res.status(500).json({ error: "Could not create new member" });
@@ -208,7 +213,7 @@ app.put("/members/:id", async (req, res) => {
 
     try {
       const result = await db
-        .collection("bandMembers")
+        .collection(bandMembers)
         .replaceOne({ _id: new ObjectId(req.params.id) }, req.body);
 
       if (result.matchedCount === 0) {
