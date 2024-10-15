@@ -162,9 +162,26 @@ app.put("/band", async (req, res) => {
 // Get all band members
 app.get("/members", async (req, res) => {
   try {
-    const members = await db.collection("bandMember").find().toArray();
+    const members = await db.collection("bandMembers").find().toArray();
     res.status(200).json(members);
   } catch (error) {
     res.status(500).json({ error: "Could not fetch members" });
+  }
+});
+
+// Get a specific band member by ID
+app.get("/members/:id", async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      const member = await db
+        .collection("bandMembers")
+        .findOne({ _id: new ObjectId(req.params.id) });
+      if (!member) return res.status(404).json({ error: "Member not found" });
+      res.status(200).json(member);
+    } catch (error) {
+      res.status(500).json({ error: "Could not fetch the member" });
+    }
+  } else {
+    res.status(400).json({ error: "Invalid ID format" });
   }
 });
