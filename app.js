@@ -118,3 +118,7 @@ app.delete("/socialmedia/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid ID format" });
   }
 });
+
+
+// BAND
+
