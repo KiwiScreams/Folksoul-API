@@ -4,9 +4,11 @@ const { ObjectId } = require("mongodb");
 
 // models
 const SocialMedia = require("./models/socialMediaModel");
+const Band = require("./models/bandModel");
 
 // validations
 const socialMediaSchema = require("./validations/socialMediaValidation");
+const bandValidationSchema = require("./validations/bandValidation");
 
 const app = express();
 app.use(express.json());
@@ -119,6 +121,14 @@ app.delete("/socialmedia/:id", async (req, res) => {
   }
 });
 
-
 // BAND
 
+// Get all band
+app.get("/band", async (req, res) => {
+  try {
+    const band = await db.collection("band").find().toArray();
+    res.status(200).json(band);
+  } catch (error) {
+    res.status(500).json({ error: "Could not fetch band" });
+  }
+});
