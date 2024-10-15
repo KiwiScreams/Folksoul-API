@@ -5,10 +5,12 @@ const { ObjectId } = require("mongodb");
 // models
 const SocialMedia = require("./models/socialMediaModel");
 const Band = require("./models/bandModel");
+const Member = require("./models/membersModel");
 
 // validations
 const socialMediaSchema = require("./validations/socialMediaValidation");
 const bandValidationSchema = require("./validations/bandValidation");
+const memberValidationSchema = require("./validations/membersValidation");
 
 const app = express();
 app.use(express.json());
@@ -153,5 +155,16 @@ app.put("/band", async (req, res) => {
     res.status(200).json({ message: "Band updated successfully" });
   } catch (error) {
     res.status(500).json({ error: "Could not update band" });
+  }
+});
+
+// MEMBERS
+// Get all band members
+app.get("/members", async (req, res) => {
+  try {
+    const members = await db.collection("bandMember").find().toArray();
+    res.status(200).json(members);
+  } catch (error) {
+    res.status(500).json({ error: "Could not fetch members" });
   }
 });
