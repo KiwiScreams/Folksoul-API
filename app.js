@@ -2,17 +2,14 @@ const express = require("express");
 const { getDb, connectToDb } = require("./db");
 const { ObjectId } = require("mongodb");
 
-// models
 const SocialMedia = require("./models/socialMediaModel");
 const Band = require("./models/bandModel");
 const Member = require("./models/membersModel");
 
-// validations
 const socialMediaSchema = require("./validations/socialMediaValidation");
 const bandValidationSchema = require("./validations/bandValidation");
 const memberValidationSchema = require("./validations/membersValidation");
 
-//
 const bandMembers = "bandMembers";
 const band = "band";
 const socialMedia = "socialMedia";
@@ -30,9 +27,7 @@ connectToDb((err) => {
     console.log("App listening on port 3000");
   });
 });
-// SOCIAL MEDIA
 
-// Get all social media
 app.get("/socialmedia", async (req, res) => {
   try {
     const socialLinks = await db
@@ -46,7 +41,6 @@ app.get("/socialmedia", async (req, res) => {
   }
 });
 
-// Get a social media link by ID
 app.get("/socialmedia/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
@@ -64,7 +58,6 @@ app.get("/socialmedia/:id", async (req, res) => {
   }
 });
 
-// Create a new social media link
 app.post("/socialmedia", async (req, res) => {
   const { error } = socialMediaSchema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
@@ -78,9 +71,7 @@ app.post("/socialmedia", async (req, res) => {
   }
 });
 
-// Update a social media link
 app.put("/socialmedia/:id", async (req, res) => {
-  console.log("PUT /socialmedia/:id", req.params.id, req.body);
 
   if (!ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ error: "Invalid ID format" });
@@ -108,7 +99,6 @@ app.put("/socialmedia/:id", async (req, res) => {
   }
 });
 
-// Delete a social media link
 app.delete("/socialmedia/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
@@ -128,14 +118,9 @@ app.delete("/socialmedia/:id", async (req, res) => {
   }
 });
 
-// BAND
-// Create a new band
-// Create a new band
-
-// GET Route to Retrieve the Single Band
 app.get("/band", async (req, res) => {
   try {
-    const band = await db.collection("band").findOne();
+    const band = await db.collection(band).findOne();
     if (!band) {
       return res.status(404).json({ error: "Band not found" });
     }
@@ -146,7 +131,6 @@ app.get("/band", async (req, res) => {
   }
 });
 
-// PUT Route to Update the Single Band
 app.put("/band", async (req, res) => {
   const { error } = bandValidationSchema.validate(req.body);
   if (error) {
@@ -154,7 +138,7 @@ app.put("/band", async (req, res) => {
   }
 
   try {
-    const result = await db.collection("band").replaceOne({}, req.body); // Use the correct collection name
+    const result = await db.collection(band).replaceOne({}, req.body);
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Band not found" });
@@ -162,13 +146,11 @@ app.put("/band", async (req, res) => {
 
     res.status(200).json({ message: "Band updated successfully" });
   } catch (error) {
-    console.error("Error updating band:", error.message); // Log the error for debugging
+    console.error("Error updating band:", error.message);
     res.status(500).json({ error: "Could not update band" });
   }
 });
 
-// MEMBERS
-// Get all band members
 app.get("/members", async (req, res) => {
   try {
     const members = await db.collection(bandMembers).find().toArray();
@@ -178,7 +160,6 @@ app.get("/members", async (req, res) => {
   }
 });
 
-// Get a specific band member by ID
 app.get("/members/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
@@ -195,7 +176,6 @@ app.get("/members/:id", async (req, res) => {
   }
 });
 
-// Create a new band member
 app.post("/members", async (req, res) => {
   const { error } = memberValidationSchema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
@@ -209,7 +189,6 @@ app.post("/members", async (req, res) => {
   }
 });
 
-// Update a band member by ID
 app.put("/members/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     const { error } = memberValidationSchema.validate(req.body);
@@ -232,7 +211,6 @@ app.put("/members/:id", async (req, res) => {
   }
 });
 
-// Delete a band member by ID
 app.delete("/members/:id", async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
