@@ -11,7 +11,6 @@ const bandValidationSchema = require("./validations/bandValidation");
 const memberValidationSchema = require("./validations/membersValidation");
 
 const bandMembers = "bandMembers";
-const band = "band";
 const socialMedia = "socialMedia";
 
 const app = express();
@@ -72,6 +71,7 @@ app.post("/socialmedia", async (req, res) => {
 });
 
 app.put("/socialmedia/:id", async (req, res) => {
+  console.log("PUT /socialmedia/:id", req.params.id, req.body);
 
   if (!ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ error: "Invalid ID format" });
@@ -120,7 +120,7 @@ app.delete("/socialmedia/:id", async (req, res) => {
 
 app.get("/band", async (req, res) => {
   try {
-    const band = await db.collection(band).findOne();
+    const band = await db.collection("band").findOne();
     if (!band) {
       return res.status(404).json({ error: "Band not found" });
     }
@@ -138,7 +138,7 @@ app.put("/band", async (req, res) => {
   }
 
   try {
-    const result = await db.collection(band).replaceOne({}, req.body);
+    const result = await db.collection("band").replaceOne({}, req.body);
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Band not found" });
