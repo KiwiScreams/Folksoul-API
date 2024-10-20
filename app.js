@@ -129,21 +129,24 @@ app.delete("/socialmedia/:id", async (req, res) => {
 });
 
 // BAND
+// Create a new band
+// Create a new band
 
-// Get the single band
+// GET Route to Retrieve the Single Band
 app.get("/band", async (req, res) => {
   try {
-    const band = await db.collection(band).findOne();
+    const band = await db.collection("band").findOne();
     if (!band) {
       return res.status(404).json({ error: "Band not found" });
     }
     res.status(200).json(band);
   } catch (error) {
+    console.error("Error fetching band:", error.message);
     res.status(500).json({ error: "Could not fetch band" });
   }
 });
 
-// Update the single band
+// PUT Route to Update the Single Band
 app.put("/band", async (req, res) => {
   const { error } = bandValidationSchema.validate(req.body);
   if (error) {
@@ -151,7 +154,7 @@ app.put("/band", async (req, res) => {
   }
 
   try {
-    const result = await db.collection(band).replaceOne({}, req.body);
+    const result = await db.collection("band").replaceOne({}, req.body); // Use the correct collection name
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Band not found" });
@@ -159,6 +162,7 @@ app.put("/band", async (req, res) => {
 
     res.status(200).json({ message: "Band updated successfully" });
   } catch (error) {
+    console.error("Error updating band:", error.message); // Log the error for debugging
     res.status(500).json({ error: "Could not update band" });
   }
 });
