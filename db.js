@@ -1,20 +1,27 @@
-const { MongoClient } = require("mongodb");
-let dbConnection;
-const uri = "mongodb://localhost:27017/music";
-module.exports = {
-  connectToDb: (cb) => {
-    MongoClient.connect(uri, {
+require("dotenv").config();
+const mongoose = require("mongoose");
+
+const uri = process.env.MONGO_URL;
+
+const connectToDb = (callback) => {
+  mongoose
+    .connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-      .then((client) => {
-        dbConnection = client.db();
-        return cb();
-      })
-      .catch((err) => {
-        console.log(err);
-        return cb(err);
-      });
-  },
-  getDb: () => dbConnection,
+    .then(() => {
+      console.log("Connected to MongoDB");
+      callback();
+    })
+    .catch((err) => {
+      console.error("Database connection error:", err);
+      callback(err);
+    });
+};
+
+const getDb = () => mongoose.connection;
+
+module.exports = {
+  connectToDb,
+  getDb,
 };
